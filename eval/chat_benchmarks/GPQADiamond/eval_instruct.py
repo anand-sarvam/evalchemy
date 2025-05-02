@@ -77,7 +77,7 @@ class GPQADiamondBenchmark(BaseBenchmark):
 
         all_outputs = []
 
-        max_new_tokens = self.max_new_tokens if self.max_new_tokens else 32768 # set default higher to avoid truncation for reasoning models
+        max_new_tokens = self.max_new_tokens if self.max_new_tokens else 8192
         temperature = self.temperature if self.temperature else 0.7
         repetition_penalty = self.repetition_penalty if self.repetition_penalty else 1.0
 
