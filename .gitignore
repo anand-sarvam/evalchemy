@@ -225,4 +225,7 @@ eval/chat_benchmarks/MixEval/mix_eval/data/test/
 eval/chat_benchmarks/MixEval/mix_eval/data/model_responses
 eval/chat_benchmarks/MixEval/mix_eval/eval_scripts
 eval/chat_benchmarks/MixEval/results
+eval/chat_benchmarks/LiveBench/data/
+eval/chat_benchmarks/MTBench/fastchat/llm_judge/data/mt_bench/model_answer/
+eval/chat_benchmarks/MTBench/fastchat/llm_judge/data/mt_bench/model_judgment/
 results/
