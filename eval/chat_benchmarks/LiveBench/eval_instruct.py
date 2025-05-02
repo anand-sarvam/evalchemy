@@ -7,6 +7,7 @@ import shortuuid
 import time
 from tqdm import tqdm
 from lm_eval.api.instance import Instance
+import re
 
 from lm_eval.api.model import LM
 import lm_eval.models as lm_eval_models
@@ -215,6 +216,8 @@ class LiveBenchBenchmark(BaseBenchmark):
                     outputs = self.compute(model, all_instances)
 
                     for idx, output in enumerate(outputs):
+                        output = self.extract_answer(output)
+
                         # Match gen_model_answer.py output cleaning
                         output = output.strip()
 
@@ -448,3 +451,12 @@ class LiveBenchBenchmark(BaseBenchmark):
         except Exception as e:
             self.logger.error(f"Error running benchmark: {str(e)}")
             return {"error": str(e)}
+
+    def extract_answer(self, output: str) -> str:
+        """Extract the answer from the model's output. Required for think models."""
+        match = re.search(r"</think>\s*(.*)", output, re.DOTALL)
+        if match:
+            output = match.group(1).strip()
+        else:
+            output = output
+        return output

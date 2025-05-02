@@ -4,6 +4,7 @@ import json
 import tempfile
 import os
 from pathlib import Path
+import re
 import logging
 import jsonlines
 from datasets import load_dataset
@@ -219,7 +220,7 @@ class WildBenchBenchmark(BaseBenchmark):
             if model.rank != 0:
                 return None
 
-            outputs = [[output] for output in outputs]
+            outputs = [[self.extract_answer(output)] for output in outputs]
 
             # Save outputs
             save_outputs(self.config, id_strs, outputs, chat_history, metadata, model_inputs, output_path)
@@ -441,3 +442,12 @@ class WildBenchBenchmark(BaseBenchmark):
         except Exception as e:
             self.logger.error(f"Error formatting eval file: {str(e)}")
             raise
+
+    def extract_answer(self, output: str) -> str:
+        """Extract the answer from the model's output. Required for think models."""
+        match = re.search(r"</think>\s*(.*)", output, re.DOTALL)
+        if match:
+            output = match.group(1).strip()
+        else:
+            output = output
+        return output

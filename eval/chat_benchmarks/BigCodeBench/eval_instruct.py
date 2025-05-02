@@ -4,6 +4,7 @@ import os
 import tempfile
 import traceback
 from typing import Any, Dict, Optional, Union
+import re
 
 from datasets import load_dataset
 from lm_eval.api.instance import Instance
@@ -199,6 +200,7 @@ class BigCodeBenchBenchmark(BaseBenchmark):
 
                 generated_examples = []
                 for example, output in zip(examples, outputs):
+                    output = self.extract_answer(output)
                     example_with_output = example.copy()
                     example_with_output["output"] = output
                     example_with_output["prompt"] = example_with_output.pop("prompt")
@@ -308,3 +310,12 @@ class BigCodeBenchBenchmark(BaseBenchmark):
         except Exception as e:
             self.logger.error(f"Error running benchmark: {str(e)}")
             return {"error": str(e)}
+
+    def extract_answer(self, output: str) -> str:
+        """Extract the answer from the model's output. Required for think models."""
+        match = re.search(r"</think>\s*(.*)", output, re.DOTALL)
+        if match:
+            output = match.group(1).strip()
+        else:
+            output = output
+        return output

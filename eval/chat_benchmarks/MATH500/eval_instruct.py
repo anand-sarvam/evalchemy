@@ -64,6 +64,10 @@ class MATH500Benchmark(BaseBenchmark):
         """
         examples = self.load_questions()
 
+        if self.debug:
+            examples = examples[:2]
+            print(f"Debug mode: Evaluating on {len(examples)} examples")
+
         max_new_tokens = self.max_new_tokens if self.max_new_tokens else 32768
         temperature = self.temperature if self.temperature else 0.7
         repetition_penalty = self.repetition_penalty if self.repetition_penalty else 1.0

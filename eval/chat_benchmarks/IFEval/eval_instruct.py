@@ -3,6 +3,7 @@ import json
 import logging
 import tempfile
 import os
+import re
 
 from lm_eval.api.model import LM
 from lm_eval.api.instance import Instance
@@ -134,6 +135,7 @@ class IFEvalBenchmark(BaseBenchmark):
             generated_examples = []
             for example, output in zip(examples, outputs):
                 try:
+                    output = self.extract_answer(output)
                     example_with_output = example.copy()
                     example_with_output["response"] = output
                     generated_examples.append(example_with_output)
@@ -219,3 +221,12 @@ class IFEvalBenchmark(BaseBenchmark):
         except Exception as e:
             self.logger.error(f"Error running benchmark: {str(e)}")
             return {"error": str(e)}
+
+    def extract_answer(self, output: str) -> str:
+        """Extract the answer from the model's output. Required for think models."""
+        match = re.search(r"</think>\s*(.*)", output, re.DOTALL)
+        if match:
+            output = match.group(1).strip()
+        else:
+            output = output
+        return output
